@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizador de Payback — Praia Digital</title>
+<meta name="description" content="Veja ano a ano quando seu imóvel de temporada se paga e começa a gerar lucro.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+  body{background:#f0f9ff;color:#0f172a;min-height:100vh}
+  header{background:linear-gradient(135deg,#0077B6,#00B4D8);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+  header a{color:#fff;text-decoration:none;font-weight:700}.logo{font-size:1.2rem}
+  main{max-width:720px;margin:2rem auto;padding:0 1rem}
+  .card{background:#fff;border-radius:16px;padding:1.75rem;box-shadow:0 4px 24px rgba(0,60,100,.08)}
+  h1{font-size:1.5rem;color:#0077B6}.sub{color:#64748b;margin:.3rem 0 1.2rem;font-size:.95rem}
+  label{display:block;font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem}
+  input{width:100%;padding:.7rem;border:1px solid #cbd5e1;border-radius:10px;font-size:1rem}
+  button{width:100%;margin-top:1.3rem;padding:.9rem;border:0;border-radius:12px;background:#0077B6;color:#fff;font-weight:800;font-size:1rem;cursor:pointer}
+  #out{display:none;margin-top:1.3rem}
+  .ano{display:flex;align-items:center;gap:.7rem;margin-top:.5rem;font-size:.85rem}
+  .ano b{width:52px}
+  .trilha{flex:1;height:20px;background:#e2e8f0;border-radius:99px;position:relative;overflow:hidden}
+  .trilha div{height:100%;background:linear-gradient(90deg,#f59e0b,#22c55e);transition:width .4s}
+  .lucro{color:#166534;font-weight:700}
+  .pb{background:#dcfce7;border:1px solid #22c55e;border-radius:12px;padding:1rem;margin-top:1rem;text-align:center;font-size:1.05rem}
+  .dica{margin-top:1rem;background:#ecfeff;border:1px solid #67e8f9;border-radius:12px;padding:1rem;font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://praia.digital/">🏖️ Praia Digital</a>
+  <a href="https://praia.digital/simulador-roi">← Simulador ROI</a>
+</header>
+<main>
+  <div class="card">
+    <h1>⏳ Visualizador de Payback</h1>
+    <p class="sub">Em que ano seu imóvel de temporada se paga?</p>
+    <label>Valor do imóvel (R$)</label><input type="number" id="valor" value="500000" step="50000">
+    <label>Receita líquida anual de temporada (R$)</label><input type="number" id="receita" value="45000" step="5000">
+    <label>Valorização anual do imóvel (%)</label><input type="number" id="val" value="10" step="0.5">
+    <button onclick="calc()">Visualizar payback</button>
+    <div id="out"></div>
+    <div class="dica">🆚 Compare com aluguel anual no <a href="https://praia.digital/simulador-roi/airbnb-vs-anual/" style="color:#0077B6;font-weight:700">Airbnb vs Anual</a> · 📈 Projete o valor na <a href="https://praia.digital/avaliador-imoveis/projecao-valorizacao/" style="color:#0077B6;font-weight:700">Projeção de Valorização</a></div>
+  </div>
+</main>
+<script>
+var fmt=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})};
+function calc(){
+  var v=parseFloat(document.getElementById('valor').value)||0;
+  var r=parseFloat(document.getElementById('receita').value)||0;
+  var t=parseFloat(document.getElementById('val').value)/100||0;
+  var acum=0, imovel=v, h='', payback=null;
+  for(var a=1;a<=15;a++){
+    acum+=r; imovel*=(1+t);
+    var patrimonio=acum+(imovel-v);
+    var pct=Math.min(100,patrimonio/v*100);
+    var cls=patrimonio>=v?'lucro':'';
+    if(!payback&&patrimonio>=v)payback=a;
+    h+='<div class="ano"><b>Ano '+a+'</b><div class="trilha"><div style="width:'+pct+'%"></div></div><span class="'+cls+'">'+fmt(patrimonio)+'</span></div>';
+  }
+  h+='<div class="pb">'+(payback?'🎉 <b>Payback no ano '+payback+'</b> — contando renda + valorização':'Em 15 anos o retorno acumulado é '+fmt(acum+(imovel-v)))+'</div>';
+  document.getElementById('out').innerHTML=h;
+  document.getElementById('out').style.display='block';
+}
+</script>
+</body>
+</html>
