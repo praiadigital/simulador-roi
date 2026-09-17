@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temporada vs Pousada — Praia Digital</title>
+<meta name="description" content="Imóvel inteiro no Airbnb ou operar como pousada? Compare faturamento, trabalho e estrutura necessária.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+  body{background:#f0f9ff;color:#0f172a;min-height:100vh}
+  header{background:linear-gradient(135deg,#0077B6,#00B4D8);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+  header a{color:#fff;text-decoration:none;font-weight:700}.logo{font-size:1.2rem}
+  main{max-width:720px;margin:2rem auto;padding:0 1rem}
+  .card{background:#fff;border-radius:16px;padding:1.75rem;box-shadow:0 4px 24px rgba(0,60,100,.08)}
+  h1{font-size:1.5rem;color:#0077B6}.sub{color:#64748b;margin:.3rem 0 1.2rem;font-size:.95rem}
+  label{display:block;font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem}
+  input{width:100%;padding:.7rem;border:1px solid #cbd5e1;border-radius:10px;font-size:1rem}
+  button{width:100%;margin-top:1.3rem;padding:.9rem;border:0;border-radius:12px;background:#0077B6;color:#fff;font-weight:800;font-size:1rem;cursor:pointer}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.3rem}
+  @media(max-width:600px){.vs{grid-template-columns:1fr}}
+  .col{border-radius:14px;padding:1.1rem}
+  .a{background:#fff1f2;border:1px solid #fda4af}.b{background:#f0fdf4;border:1px solid #86efac}
+  .col h3{font-size:1rem;margin-bottom:.5rem}
+  .linha{display:flex;justify-content:space-between;font-size:.87rem;padding:.3rem 0}
+  .big{font-size:1.3rem;font-weight:800;color:#0369a1}
+  #verdict{margin-top:1rem;background:#ecfeff;border:1px solid #67e8f9;border-radius:12px;padding:1rem;font-size:.95rem;display:none}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://praia.digital/">🏖️ Praia Digital</a>
+  <a href="https://praia.digital/simulador-roi">← Simulador ROI</a>
+</header>
+<main>
+  <div class="card">
+    <h1>🏡 Temporada vs Pousada</h1>
+    <p class="sub">Sua casa grande no litoral: aluguel inteiro no Airbnb ou operação estilo pousada (por quarto)?</p>
+    <label>Quartos disponíveis</label><input type="number" id="quartos" value="4" min="2">
+    <label>Diária da casa inteira (R$)</label><input type="number" id="casa" value="900">
+    <label>Diária por quarto no modelo pousada (R$)</label><input type="number" id="quarto" value="280">
+    <label>Ocupação esperada (%)</label><input type="number" id="oc" value="50">
+    <button onclick="cmp()">Comparar modelos</button>
+    <div class="vs" id="vs" style="display:none">
+      <div class="col a"><h3>🏠 Casa inteira (Airbnb)</h3><div class="big" id="vA"></div><small>receita líquida/ano</small><div class="linha"><span>Trabalho</span><b>Baixo</b></div><div class="linha"><span>Café da manhã</span><b>Não</b></div><div class="linha"><span>Regulamentação</span><b>Simples</b></div></div>
+      <div class="col b"><h3>🛎️ Pousada (por quarto)</h3><div class="big" id="vB"></div><small>receita líquida/ano</small><div class="linha"><span>Trabalho</span><b>Alto (operação diária)</b></div><div class="linha"><span>Café da manhã</span><b>Esperado</b></div><div class="linha"><span>Regulamentação</span><b>CNPJ + alvarás</b></div></div>
+    </div>
+    <div id="verdict"></div>
+  </div>
+</main>
+<script>
+var fmt=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})};
+function cmp(){
+  var q=parseFloat(document.getElementById('quartos').value)||1;
+  var c=parseFloat(document.getElementById('casa').value)||0;
+  var pq=parseFloat(document.getElementById('quarto').value)||0;
+  var oc=parseFloat(document.getElementById('oc').value)/100||0;
+  var liqA=c*365*oc*0.85;
+  var liqB=pq*q*365*oc*0.85*0.8; // 20% custo operacional extra (cafe, limpeza diaria)
+  document.getElementById('vs').style.display='grid';
+  document.getElementById('vA').textContent=fmt(liqA);
+  document.getElementById('vB').textContent=fmt(liqB);
+  document.getElementById('verdict').style.display='block';
+  document.getElementById('verdict').innerHTML=liqB>liqA
+    ?'🛎️ <b>Pousada fatura mais</b> ('+fmt(liqB-liqA)+'/ano a mais), mas vira um emprego em tempo integral. Ideal se você mora no local ou quer um negócio, não só renda passiva. Comece testando quartos no <a href="https://praia.digital/area-anfitriao/precificador-dinamico/" style="color:#0077B6;font-weight:700">Precificador Dinâmico</a>.'
+    :'🏠 <b>Casa inteira vence</b> em simplicidade e retorno por hora trabalhada. Escale adicionando outro imóvel em vez de operar pousada. Simule no <a href="https://praia.digital/simulador-roi/payback/" style="color:#0077B6;font-weight:700">Payback</a>.';
+}
+</script>
+</body>
+</html>
