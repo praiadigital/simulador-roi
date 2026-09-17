@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vale a Pena Reformar? — Praia Digital</title>
+<meta name="description" content="Calcule o retorno de uma reforma no valor de venda ou na diária de temporada do seu imóvel.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+  body{background:#f0f9ff;color:#0f172a;min-height:100vh}
+  header{background:linear-gradient(135deg,#0077B6,#00B4D8);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+  header a{color:#fff;text-decoration:none;font-weight:700}.logo{font-size:1.2rem}
+  main{max-width:700px;margin:2rem auto;padding:0 1rem}
+  .card{background:#fff;border-radius:16px;padding:1.75rem;box-shadow:0 4px 24px rgba(0,60,100,.08)}
+  h1{font-size:1.5rem;color:#0077B6}.sub{color:#64748b;margin:.3rem 0 1.2rem;font-size:.95rem}
+  label{display:block;font-weight:600;font-size:.85rem;margin:.9rem 0 .3rem}
+  input,select{width:100%;padding:.7rem;border:1px solid #cbd5e1;border-radius:10px;font-size:1rem}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.5rem}
+  @media(max-width:600px){.checks{grid-template-columns:1fr}}
+  .chk{display:flex;gap:.5rem;align-items:flex-start;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:.7rem .8rem;cursor:pointer;font-size:.88rem}
+  .chk input{width:auto;margin-top:.15rem}
+  .chk small{color:#64748b;display:block}
+  button{width:100%;margin-top:1.3rem;padding:.9rem;border:0;border-radius:12px;background:#0077B6;color:#fff;font-weight:800;font-size:1rem;cursor:pointer}
+  #out{display:none;margin-top:1.3rem}
+  .linha{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #e2e8f0;font-size:.92rem}
+  .destaque{background:#dcfce7;border:1px solid #22c55e;border-radius:12px;padding:1rem;margin-top:.8rem;text-align:center}
+  .destaque b{font-size:1.3rem;color:#166534}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://praia.digital/">🏖️ Praia Digital</a>
+  <a href="https://praia.digital/simulador-roi">← Simulador ROI</a>
+</header>
+<main>
+  <div class="card">
+    <h1>🔨 Vale a Pena Reformar?</h1>
+    <p class="sub">Selecione as melhorias e veja o retorno estimado na venda ou na temporada.</p>
+    <label>Valor atual do imóvel (R$)</label><input type="number" id="valor" value="450000">
+    <label>Diária de temporada atual (R$) — se aplicável</label><input type="number" id="diaria" value="380">
+    <label>Melhorias planejadas</label>
+    <div class="checks">
+      <label class="chk"><input type="checkbox" value="cozinha" data-c="35000" data-v="0.07" data-d="0.12"> Cozinha planejada<small>R$ 35 mil · +7% valor · +12% diária</small></label>
+      <label class="chk"><input type="checkbox" value="banho" data-c="20000" data-v="0.05" data-d="0.08"> Banheiro renovado<small>R$ 20 mil · +5% valor · +8% diária</small></label>
+      <label class="chk"><input type="checkbox" value="pintura" data-c="8000" data-v="0.03" data-d="0.05"> Pintura + iluminação<small>R$ 8 mil · +3% valor · +5% diária</small></label>
+      <label class="chk"><input type="checkbox" value="mobilia" data-c="25000" data-v="0.04" data-d="0.18"> Mobília completa<small>R$ 25 mil · +4% valor · +18% diária</small></label>
+      <label class="chk"><input type="checkbox" value="ar" data-c="6000" data-v="0.02" data-d="0.10"> Ar-condicionado<small>R$ 6 mil · +2% valor · +10% diária</small></label>
+      <label class="chk"><input type="checkbox" value="gourmet" data-c="30000" data-v="0.06" data-d="0.15"> Área gourmet<small>R$ 30 mil · +6% valor · +15% diária</small></label>
+    </div>
+    <button onclick="calc()">Calcular retorno da reforma</button>
+    <div id="out"></div>
+  </div>
+</main>
+<script>
+var fmt=function(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})};
+function calc(){
+  var v=parseFloat(document.getElementById('valor').value)||0;
+  var d=parseFloat(document.getElementById('diaria').value)||0;
+  var custo=0, pv=0, pd=0;
+  document.querySelectorAll('.checks input:checked').forEach(function(c){
+    custo+=parseFloat(c.dataset.c); pv+=parseFloat(c.dataset.v); pd+=parseFloat(c.dataset.d);
+  });
+  var ganhoV=v*pv, novoDia=d*(1+pd);
+  var receitaAno=(novoDia-d)*365*0.55;
+  var retornoTotal=ganhoV+receitaAno;
+  var roi=(retornoTotal-custo)/custo*100;
+  document.getElementById('out').innerHTML=
+    '<div class="linha"><span>Investimento total</span><b>'+fmt(custo)+'</b></div>'+
+    '<div class="linha"><span>Ganho no valor de venda</span><b>+'+fmt(ganhoV)+'</b></div>'+
+    '<div class="linha"><span>Nova diária de temporada</span><b>'+fmt(novoDia)+' (+'+Math.round(pd*100)+'%)</b></div>'+
+    '<div class="linha"><span>Receita extra no 1º ano</span><b>+'+fmt(receitaAno)+'</b></div>'+
+    '<div class="destaque">'+(roi>=0?'✅ Reforma compensa! ROI estimado: <b>+'+roi.toFixed(0)+'%</b> no primeiro ano':'⚠️ Retorno abaixo do custo no 1º ano ('+roi.toFixed(0)+'%) — considere menos itens')+'<br><small>Detalhe no <a href="https://praia.digital/simulador-roi" style="color:#166534">Simulador ROI</a></small></div>';
+  document.getElementById('out').style.display='block';
+}
+</script>
+</body>
+</html>
