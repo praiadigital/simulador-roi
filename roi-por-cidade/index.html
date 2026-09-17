@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI de Temporada por Cidade — Praia Digital</title>
+<meta name="description" content="Qual cidade do litoral paulista tem o melhor retorno de aluguel de temporada? Ranking de ROI anual.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+  body{background:#f0f9ff;color:#0f172a;min-height:100vh}
+  header{background:linear-gradient(135deg,#0077B6,#00B4D8);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+  header a{color:#fff;text-decoration:none;font-weight:700}.logo{font-size:1.2rem}
+  main{max-width:720px;margin:2rem auto;padding:0 1rem}
+  .card{background:#fff;border-radius:16px;padding:1.75rem;box-shadow:0 4px 24px rgba(0,60,100,.08)}
+  h1{font-size:1.5rem;color:#0077B6}.sub{color:#64748b;margin:.3rem 0 1.2rem;font-size:.95rem}
+  label{font-weight:600;font-size:.85rem;display:block;margin-bottom:.3rem}
+  input{width:100%;padding:.7rem;border:1px solid #cbd5e1;border-radius:10px;font-size:1rem}
+  .rank{display:flex;align-items:center;gap:.8rem;padding:.75rem .8rem;border-radius:12px;margin-bottom:.5rem;background:#f8fafc;border:1px solid #e2e8f0}
+  .pos{font-size:1.15rem;font-weight:800;color:#0077B6;width:30px;text-align:center}
+  .info{flex:1}
+  .info b{font-size:.95rem}
+  .info small{display:block;color:#64748b;font-size:.78rem}
+  .roi{font-weight:800;color:#166534;white-space:nowrap}
+  .trilha{height:6px;background:#e2e8f0;border-radius:99px;margin-top:.25rem;overflow:hidden}
+  .trilha div{height:100%;background:linear-gradient(90deg,#22c55e,#4ade80)}
+  .dica{margin-top:1.2rem;background:#ecfeff;border:1px solid #67e8f9;border-radius:12px;padding:1rem;font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="https://praia.digital/">🏖️ Praia Digital</a>
+  <a href="https://praia.digital/simulador-roi">← Simulador ROI</a>
+</header>
+<main>
+  <div class="card">
+    <h1>🏆 ROI de Temporada por Cidade</h1>
+    <p class="sub">Ranking com dados de referência. Ajuste o tamanho do imóvel:</p>
+    <label>Área do imóvel (m²)</label>
+    <input type="number" id="area" value="70" oninput="render()">
+    <div id="lista"></div>
+    <div class="dica">📊 Simule seu caso no <a href="https://praia.digital/simulador-roi" style="color:#0077B6;font-weight:700">Simulador ROI</a> · ⏳ <a href="https://praia.digital/simulador-roi/payback/" style="color:#0077B6;font-weight:700">Payback</a> · 🌡️ <a href="https://praia.digital/guia-litoral/termometro-mercado/" style="color:#0077B6;font-weight:700">Termômetro</a></div>
+  </div>
+</main>
+<script>
+var dados=[
+  {n:'Praia Grande',m2:5400,diaria:400,oc:0.60},
+  {n:'Guarujá',m2:7500,diaria:550,oc:0.58},
+  {n:'Santos',m2:6200,diaria:480,oc:0.62},
+  {n:'Bertioga',m2:6800,diaria:520,oc:0.48},
+  {n:'Mongaguá',m2:4700,diaria:350,oc:0.50},
+  {n:'Peruíbe',m2:4200,diaria:320,oc:0.45},
+  {n:'São Vicente',m2:5800,diaria:420,oc:0.52},
+  {n:'Itanhaém',m2:4400,diaria:330,oc:0.47}
+];
+function render(){
+  var area=parseFloat(document.getElementById('area').value)||70;
+  var arr=dados.map(function(c){
+    var invest=c.m2*area;
+    var receita=c.diaria*365*c.oc*0.85-12000; // taxa 15% + custos médios
+    return {n:c.n,invest:invest,roi:receita/invest*100,receita:receita};
+  }).sort(function(a,b){return b.roi-a.roi});
+  var max=arr[0].roi;
+  document.getElementById('lista').innerHTML=arr.map(function(c,i){
+    var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'º';
+    return '<div class="rank"><span class="pos">'+medal+'</span><span class="info"><b>'+c.n+'</b><small>Investimento: R$ '+Math.round(c.invest/1000)+' mil · Líquido: R$ '+Math.round(c.receita/1000)+' mil/ano</small><div class="trilha"><div style="width:'+(c.roi/max*100)+'%"></div></div></span><span class="roi">'+c.roi.toFixed(1)+'%</span></div>';
+  }).join('');
+}
+render();
+</script>
+</body>
+</html>
